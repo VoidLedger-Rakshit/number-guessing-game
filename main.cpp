@@ -1,22 +1,20 @@
 #include <iostream>
-#include <cstdlib>   // for rand(), srand()
-#include <ctime>     // for time()
-#include <limits>    // for numeric_limits
+#include <random>
+#include <limits>
 
 int main() {
-    // seed the RNG with current time so it's diff every run
-    srand(static_cast<unsigned int>(time(nullptr)));
+    std::mt19937 rng(std::random_device{}());
 
     const int MIN = 1;
     const int MAX = 100;
     const int MAX_ATTEMPTS = 10;
 
-    // generate secret number in range [1, 100]
-    int secret = (rand() % (MAX - MIN + 1)) + MIN;
+    std::uniform_int_distribution<int> dist(MIN, MAX);
+    int secret = dist(rng);
 
-    int guess      = 0;
-    int attempts   = 0;
-    bool won       = false;
+    int guess    = 0;
+    int attempts = 0;
+    bool won     = false;
 
     std::cout << "=== Number Guessing Game ===\n";
     std::cout << "Guess a number between " << MIN << " and " << MAX << "\n";
@@ -26,7 +24,6 @@ int main() {
         std::cout << "Attempt " << (attempts + 1) << "/" << MAX_ATTEMPTS << " → ";
         std::cin >> guess;
 
-        // handle bad input (letters, symbols, etc.)
         if (std::cin.fail()) {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -34,7 +31,6 @@ int main() {
             continue;
         }
 
-        // validate range
         if (guess < MIN || guess > MAX) {
             std::cout << "Out of range! Enter between " << MIN << " and " << MAX << "\n";
             continue;
@@ -56,7 +52,6 @@ int main() {
             std::cout << left << " attempt(s) left\n\n";
     }
 
-    // result
     if (won) {
         std::cout << "\nGG! You got it in " << attempts << " attempt(s)!\n";
     } else {
